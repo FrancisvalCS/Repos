@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa';
 import {Container, Form, SubmitButton, List, DeleteButton} from './styles';
-
+import {Link} from 'react-router-dom';
 import api from '../../services/api';
 
 export default function Main(){
@@ -11,20 +11,21 @@ export default function Main(){
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
 
-  //Buscar
-    useEffect(()=>{
-        const repoStorage = localStorage.getItem('repos');
+  // Buscar
+  useEffect(()=>{
+    const repoStorage = localStorage.getItem('repos');
 
-        if(repoStorage){
-            setRepositorios(JSON.parse(repoStorage));
-        }
+    if(repoStorage){
+      setRepositorios(JSON.parse(repoStorage));
+    }
 
-    },[]);
+  }, []);
 
+  
   // Salvar alterações
-    useEffect(()=>{
-        localStorage.setItem('repos', JSON.stringify(repositorios));
-    }, [repositorios]);
+  useEffect(()=>{
+    localStorage.setItem('repos', JSON.stringify(repositorios));
+  }, [repositorios]);
 
   const handleSubmit = useCallback((e)=>{
     e.preventDefault();
@@ -33,8 +34,9 @@ export default function Main(){
       setLoading(true);
       setAlert(null);
       try{
+
         if(newRepo === ''){
-            throw new Error('Você precisa indicar um repositório!');
+          throw new Error('Você precisa indicar um repositorio!');
         }
 
         const response = await api.get(`repos/${newRepo}`);
@@ -42,7 +44,7 @@ export default function Main(){
         const hasRepo = repositorios.find(repo => repo.name === newRepo);
 
         if(hasRepo){
-            throw new Error('Repositorio Duplicado');
+          throw new Error('Repositorio Duplicado');
         }
   
         const data = {
@@ -52,7 +54,7 @@ export default function Main(){
         setRepositorios([...repositorios, data]);
         setNewRepo('');
       }catch(error){
-        setAlert(true);  
+        setAlert(true);
         console.log(error);
       }finally{
         setLoading(false);
@@ -110,9 +112,9 @@ export default function Main(){
              </DeleteButton>  
              {repo.name}
              </span>
-             <a href="">
+             <Link to={`/repositorio/${encodeURIComponent(repo.name)}`}>
                <FaBars size={20}/>
-             </a>
+             </Link>
            </li>
          ))} 
       </List>
